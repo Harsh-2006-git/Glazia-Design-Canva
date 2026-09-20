@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Sun,
@@ -25,6 +25,47 @@ import {
 
 export default function LandingPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [activeFeatureIndex, setActiveFeatureIndex] = useState(0);
+
+  const featuresList = [
+    {
+      icon: <Zap className="w-4.5 h-4.5 fill-blue-600 text-blue-600" />,
+      bg: 'bg-blue-50 text-blue-600 border-blue-100',
+      title: 'Easy to Use',
+      desc: 'Intuitive drag-and-drop interface for quick design'
+    },
+    {
+      icon: <Layers className="w-4.5 h-4.5 text-purple-600" />,
+      bg: 'bg-purple-50 text-purple-600 border-purple-100',
+      title: 'Multiple Elements',
+      desc: 'Add rectangles, circles, text and more to canvas'
+    },
+    {
+      icon: <Cloud className="w-4.5 h-4.5 text-teal-600" />,
+      bg: 'bg-teal-50 text-teal-600 border-teal-100',
+      title: 'Save & Access',
+      desc: 'Store your canvases securely and access anytime'
+    },
+    {
+      icon: <Sliders className="w-4.5 h-4.5 text-amber-600" />,
+      bg: 'bg-amber-50 text-amber-600 border-amber-100',
+      title: 'Full Control',
+      desc: 'Select, resize, rotate and edit with precision'
+    },
+    {
+      icon: <ShieldCheck className="w-4.5 h-4.5 text-indigo-600" />,
+      bg: 'bg-indigo-50 text-indigo-600 border-indigo-100',
+      title: 'Built for Developers',
+      desc: 'Modern tech stack: Next.js, Node.js & MongoDB'
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveFeatureIndex((prev) => (prev + 1) % featuresList.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [featuresList.length]);
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#fcfdff] text-slate-900 relative flex flex-col justify-between font-sans selection:bg-blue-100 selection:text-blue-900">
@@ -122,8 +163,8 @@ export default function LandingPage() {
       {/* ========================================================================= */}
       {/* 2. HERO CONTENT (Straight untilted editor, mobile optimized)              */}
       {/* ========================================================================= */}
-      <main className="w-full max-w-[1440px] mx-auto px-3.5 sm:px-12 flex-1 flex items-center min-h-0 pt-20 sm:pt-[104px] pb-4 sm:pb-8 lg:pb-5 overflow-x-hidden">
-        <div className="w-full grid grid-cols-12 gap-5 sm:gap-8 xl:gap-14 items-center">
+      <main className="w-full max-w-[1440px] mx-auto px-3.5 sm:px-12 flex-1 flex flex-col justify-center min-h-[calc(100dvh-64px)] sm:min-h-0 pt-16 sm:pt-[104px] pb-6 sm:pb-8 lg:pb-5 overflow-x-hidden">
+        <div className="w-full grid grid-cols-12 gap-6 sm:gap-8 xl:gap-14 items-center">
 
           {/* LEFT COLUMN */}
           <div className="col-span-12 lg:col-span-5 flex flex-col items-start text-left space-y-3.5 sm:space-y-4 xl:space-y-5 z-10">
@@ -228,7 +269,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* Mockup Editor Body */}
-                <div className="h-[245px] xs:h-[275px] sm:h-[345px] xl:h-[365px] flex overflow-hidden bg-white">
+                <div className="h-[265px] xs:h-[280px] sm:h-[345px] xl:h-[365px] flex overflow-hidden bg-white">
 
                   {/* Left Toolbar */}
                   <div className="w-[75px] xs:w-[90px] sm:w-[105px] bg-white border-r border-slate-100 flex flex-col p-1 xs:p-1.5 sm:p-2 space-y-1 select-none flex-shrink-0">
@@ -293,8 +334,8 @@ export default function LandingPage() {
                   </div>
 
                   {/* Right Properties Panel */}
-                  <div className="w-[140px] xs:w-[165px] sm:w-[215px] xl:w-[230px] bg-white border-l border-slate-100 p-1.5 xs:p-2 sm:p-3 flex flex-col justify-between text-[8px] xs:text-[9.5px] sm:text-[11px] select-none flex-shrink-0">
-                    <div className="space-y-1 xs:space-y-1.5 sm:space-y-2.5">
+                  <div className="w-[140px] xs:w-[165px] sm:w-[215px] xl:w-[230px] bg-white border-l border-slate-100 p-1 xs:p-2 sm:p-3 flex flex-col justify-between text-[8px] xs:text-[9.5px] sm:text-[11px] select-none flex-shrink-0">
+                    <div className="space-y-0.5 xs:space-y-1 sm:space-y-2.5">
                       <span className="font-bold text-[#0a192f] block text-[10px] xs:text-xs">Properties</span>
 
                       {/* X & Y */}
@@ -368,7 +409,7 @@ export default function LandingPage() {
 
                     {/* Delete Element Button */}
                     <div className="pt-0.5">
-                      <button className="w-full py-1 sm:py-1.5 px-1 sm:px-2 text-red-600 border border-red-200 hover:bg-red-50 rounded-md sm:rounded-lg flex items-center justify-center gap-1 font-medium transition-colors text-[8.5px] xs:text-[9.5px]">
+                      <button className="w-full py-0.5 sm:py-1.5 px-1 sm:px-2 text-red-600 border border-red-200 hover:bg-red-50 rounded-md sm:rounded-lg flex items-center justify-center gap-1 font-medium transition-colors text-[8.5px] xs:text-[9.5px]">
                         <Trash2 className="w-2.5 sm:w-3 h-2.5 sm:h-3" />
                         <span className="truncate">Delete</span>
                       </button>
@@ -387,8 +428,47 @@ export default function LandingPage() {
       {/* ========================================================================= */}
       {/* 3. BOTTOM 5 FEATURE CARDS STRIP (Mobile horizontal row / Desktop grid)   */}
       {/* ========================================================================= */}
-      <footer id="features" className="hidden sm:block w-full max-w-[1440px] mx-auto px-4 sm:px-12 pb-8 pt-4 border-t border-slate-200/80 flex-shrink-0 z-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-5 select-none">
+      <footer id="features" className="w-full max-w-[1440px] mx-auto px-3.5 sm:px-12 pb-3 sm:pb-8 pt-0 sm:pt-4 border-t-0 sm:border-t sm:border-slate-200/80 -mt-5 sm:mt-0 flex-shrink-0 z-20">
+
+        {/* Mobile Single Feature Card Auto-Switcher (1 feature at a time, direct transition) */}
+        <div className="sm:hidden w-full flex flex-col items-center justify-center py-0">
+          <div className="w-full max-w-[390px] xs:max-w-[430px] bg-white border border-slate-200/90 rounded-2xl p-3.5 shadow-sm flex items-center justify-between transition-all duration-300">
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className={`w-10.5 h-10.5 rounded-xl border flex items-center justify-center flex-shrink-0 ${featuresList[activeFeatureIndex].bg}`}>
+                {featuresList[activeFeatureIndex].icon}
+              </div>
+              <div className="min-w-0">
+                <h4 className="font-bold text-sm xs:text-[15px] text-slate-900 truncate">
+                  {featuresList[activeFeatureIndex].title}
+                </h4>
+                <p className="text-xs text-slate-500 leading-tight mt-0.5 truncate">
+                  {featuresList[activeFeatureIndex].desc}
+                </p>
+              </div>
+            </div>
+
+            {/* Step Counter Badge */}
+            <span className="text-xs font-mono font-bold text-slate-600 bg-slate-100 border border-slate-200/80 px-2.5 py-1 rounded-full flex-shrink-0 ml-2 shadow-2xs">
+              {activeFeatureIndex + 1}/5
+            </span>
+          </div>
+
+          {/* Dots Indicator */}
+          <div className="flex items-center gap-2 pt-2">
+            {featuresList.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveFeatureIndex(i)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  i === activeFeatureIndex ? 'w-7 bg-blue-600' : 'w-2 bg-slate-200'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop 5-Column Grid (Desktop only) */}
+        <div className="hidden sm:grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-5 select-none">
 
           {/* Feature 1: Easy to Use (Vibrant Blue accent) */}
           <div className="bg-white border border-slate-200/90 hover:border-blue-200 rounded-2xl p-4 sm:p-4.5 shadow-xs hover:shadow-md transition-all duration-300 flex flex-row sm:flex-col items-center sm:items-start space-x-3.5 sm:space-x-0 sm:space-y-3 group hover:-translate-y-0.5">
