@@ -1,288 +1,360 @@
-# Glazia — Mini Design Canvas
+<div align="center">
 
-> **Full Stack Developer Intern Technical Assignment**  
-> Built for **Glazia** using **Next.js (App Router), React, TypeScript, Tailwind CSS, React Konva, Node.js, Express.js, and MongoDB (Mongoose)**.
+<img src="frontend/public/logo.jpg" alt="Glazia Logo" width="90" height="90" style="border-radius: 20px; margin-bottom: 12px" />
 
----
+# ✦ Glazia Design Canvas
 
-## 1. Project Overview
+### *A Canva/Figma-inspired browser design tool — built from scratch*
 
-**Glazia Mini Design Canvas** is a modern, high-performance browser-based vector design canvas inspired by Canva and Figma. It enables users to create design canvases, place and manipulate basic geometric shapes and typography, customize properties through a dedicated inspection panel, manage layer hierarchy, and persist designs into MongoDB via a structured REST API.
+[![Next.js](https://img.shields.io/badge/Next.js_14-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React Konva](https://img.shields.io/badge/React_Konva-FF6B6B?style=for-the-badge&logo=react&logoColor=white)](https://konvajs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 
-The canvas engine is built natively using **React Konva** (`Stage`, `Layer`, `Rect`, `Circle`, `Text`, and `Transformer`), with state managed authoritatively in React and synchronized after each drag and transform event.
+<br/>
 
----
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-glazia--design--canva.vercel.app-5865F2?style=for-the-badge)](https://glazia-design-canva.vercel.app/)
+[![API](https://img.shields.io/badge/🔌_API-glazia--backend.onrender.com-10B981?style=for-the-badge)](https://glazia-design-canva-backend.onrender.com)
 
-## 2. Features
-
-### Core Features (Mandatory)
-* **Canvas Initialization**: Create a blank canvas with customizable dimensions (default: 1000 × 650) and background color.
-* **Element Creation**:
-  * **Rectangle**: Configurable position, dimensions, rotation, fill color, and stroke outline.
-  * **Circle**: Configurable position, diameter, fill color, and stroke outline.
-  * **Text**: Customizable text content, font size, font family, and color.
-* **Selection & Transform**:
-  * Click any element to select it; clicking empty canvas deselects.
-  * Interactive **Konva Transformer** handles for 8-point resizing and continuous 360° rotation.
-  * **Dimension Normalization**: Scale factors (`scaleX`/`scaleY`) are automatically normalized into actual pixel dimensions (`width`/`height`) and scales reset to 1 on `onTransformEnd`.
-* **Drag & Drop**: Smooth dragging with immediate coordinate synchronization back into React state on `onDragEnd`.
-* **Properties Inspector**: Right-hand panel providing real-time two-way editing for position ($X$, $Y$), dimensions ($W$, $H$), rotation slider, fill color picker + hex input, stroke outline, text content, font size, and element deletion.
-* **MongoDB Persistence & CRUD**:
-  * **Create**: Save new canvases to MongoDB with title, description, dimensions, and elements array.
-  * **List**: View all saved canvases on the dashboard with miniature rendered previews and metadata.
-  * **Load**: Open previously saved canvases directly into the editor with state hydration.
-  * **Update**: Persist modifications back to existing MongoDB documents without duplication.
-  * **Delete**: Remove canvases with a destructive confirmation dialog.
-
-### Bonus Features (Implemented)
-1. **Layer Management & Reordering**: Dedicated Layers panel displaying elements in z-order, with controls to bring forward, send backward, toggle visibility, and delete.
-2. **50-Step Undo / Redo**: Deep history snapshot stack with keyboard shortcuts (`Ctrl + Z`, `Ctrl + Shift + Z` / `Ctrl + Y`).
-3. **Debounced Autosave**: Automatic background saving (1.5-second debounce) for existing canvases with a visual status indicator (`Saved just now`, `Saving...`).
-4. **PNG Export**: High-resolution canvas export via `stage.toDataURL()` with transformer bounding boxes automatically excluded.
-5. **JWT Authentication & User Canvases**: Optional user registration, login, profile management, and association of canvases with user IDs (while supporting guest mode).
-6. **Canvas Zoom & Viewport**: Zoom in, zoom out, and reset zoom (`100%`) without corrupting underlying canvas coordinates.
-7. **Keyboard Shortcuts**:
-   * <kbd>Delete</kbd> / <kbd>Backspace</kbd>: Delete selected element.
-   * <kbd>Escape</kbd>: Clear selection.
-   * <kbd>Ctrl + Z</kbd>: Undo.
-   * <kbd>Ctrl + Shift + Z</kbd>: Redo.
-   * <kbd>Ctrl + S</kbd>: Save canvas.
+</div>
 
 ---
 
-## 3. Technology Stack
+## 📋 Table of Contents
 
-| Layer | Technology | Purpose |
-| :--- | :--- | :--- |
-| **Frontend Framework** | **Next.js 14 (App Router)** | Client-side routing, layout rendering, performance optimization |
-| **UI Library** | **React 18** | Authoritative canvas state and component architecture |
-| **Canvas Engine** | **React Konva & Konva.js** | Declarative HTML5 2D canvas rendering (`Stage`, `Layer`, `Transformer`) |
-| **Styling** | **Tailwind CSS** | Professional SaaS-style design system with custom Glazia palette |
-| **Language** | **TypeScript** | Strict type definitions for canvas elements, API models, and props |
-| **Icons** | **Lucide React** | Clean, recognizable modern interface icons |
-| **Backend Framework** | **Node.js & Express.js** | RESTful API server, routing, and controller architecture |
-| **Database** | **MongoDB & Mongoose** | Document database and object data modeling (ODM) with validation |
-| **Authentication** | **JWT & Bcrypt.js** | Secure token-based authentication and password hashing |
-| **CORS & Env** | **cors & dotenv** | Cross-Origin Resource Sharing and environment configuration |
+- [✦ Glazia Design Canvas](#-glazia-design-canvas)
+    - [*A Canva/Figma-inspired browser design tool — built from scratch*](#a-canvafigma-inspired-browser-design-tool--built-from-scratch)
+  - [📋 Table of Contents](#-table-of-contents)
+  - [🎯 Overview](#-overview)
+  - [✨ Features](#-features)
+    - [🔷 Core Features](#-core-features)
+    - [⭐ Bonus Features Implemented](#-bonus-features-implemented)
+  - [🛠️ Tech Stack](#️-tech-stack)
+  - [🏗️ Architecture](#️-architecture)
+  - [📁 Project Structure](#-project-structure)
+  - [⚡ Quick Start](#-quick-start)
+  - [🔌 API Reference](#-api-reference)
+  - [🗄️ Data Models](#️-data-models)
+  - [⌨️ Keyboard Shortcuts](#️-keyboard-shortcuts)
+  - [🌐 Deployment](#-deployment)
+  - [⚠️ Known Limitations](#️-known-limitations)
+  - [🧠 Engineering Decisions](#-engineering-decisions)
+  - [✅ Testing Checklist](#-testing-checklist)
+  - [📄 License](#-license)
 
 ---
 
-## 4. Architecture & System Flow
+## 🎯 Overview
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                    Next.js Frontend                         │
-│                                                             │
-│  useCanvas() <───> useHistory() (Undo/Redo 50 snapshots)    │
-│       │                                                     │
-│       ▼                                                     │
-│  <CanvasStage>                                              │
-│    └── <Stage>                                              │
-│          └── <Layer>                                        │
-│                ├── <Rect /> (Background paper)              │
-│                ├── <CanvasElement /> (Rect, Circle, Text)   │
-│                └── <SelectionTransformer />                 │
-│                      └─► onTransformEnd (normalize scale)   │
-│                                                             │
-│  lib/api.ts (Centralized API Client)                        │
-└──────────────────────────┬──────────────────────────────────┘
-                           │ HTTP REST (JSON)
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   Express.js Backend                        │
-│                                                             │
-│  Routes (/api/canvases, /api/auth)                          │
-│       ↓                                                     │
-│  Validators (Payload integrity & ObjectId checks)           │
-│       ↓                                                     │
-│  Controllers (canvasController, authController)             │
-│       ↓                                                     │
-│  Services (canvasService)                                   │
-│       ↓                                                     │
-│  Models (Mongoose: Canvas, User)                            │
-│       ↓                                                     │
-│  MongoDB (glazia_design_canvas)                             │
-└─────────────────────────────────────────────────────────────┘
+**Glazia Design Canvas** is a full-stack, browser-based vector design editor — inspired by Canva and Figma. It enables users to:
+
+- 🎨 Create and design on a blank canvas
+- 🔷 Place, resize, rotate and style 10 shape types
+- 📝 Add customisable typography
+- 🗂️ Manage element layers and visibility
+- 💾 Persist designs in **MongoDB** via a structured REST API
+- 👤 Authenticate with JWT and associate canvases to users
+- 📱 Work seamlessly on both **desktop and mobile**
+
+The canvas engine is built natively on **React Konva** (`Stage` → `Layer` → `Transformer`), with React as the single source of truth for all element state.
+
+---
+
+## ✨ Features
+
+### 🔷 Core Features
+
+| Feature | Details |
+|---------|---------|
+| 🖼️ **Canvas Init** | Blank canvas with configurable dimensions (default 1000×650) and background colour |
+| ➕ **Element Creation** | Rectangle, Circle, Star, Triangle, Diamond, Hexagon, Line, Arrow, Text, Badge |
+| 🖱️ **Selection & Transform** | Konva Transformer with 8-point resize handles and 360° rotation |
+| 🤏 **Drag & Drop** | Smooth element dragging with coordinate sync on `onDragEnd` |
+| 🎛️ **Properties Inspector** | Real-time X/Y/W/H, rotation slider, fill/stroke pickers, text editing, corner radius |
+| 💾 **MongoDB CRUD** | Create · List · Load · Update · Delete canvases with full API validation |
+| 🔐 **Auth System** | JWT register / login / profile — with full guest mode support |
+| 📱 **Mobile Responsive** | Dedicated mobile bottom toolbar, right-slide sidebars, touch-friendly hit targets |
+
+### ⭐ Bonus Features Implemented
+
+```
+✅  1. Layer Panel          → Z-order reordering, visibility toggle, per-element delete
+✅  2. Undo / Redo          → 50-step history stack (Ctrl+Z / Ctrl+Shift+Z)
+✅  3. Autosave             → 1.5s debounced background save with status indicator
+✅  4. PNG Export           → High-res export via stage.toDataURL() (transformer hidden)
+✅  5. JWT Auth             → Register · Login · Profile update · Canvas ownership
+✅  6. Zoom & Viewport      → Zoom in/out/reset without corrupting canvas coordinates
+✅  7. Keyboard Shortcuts   → Delete, Escape, Ctrl+Z/Y/S
+✅  8. Guest Mode           → Full editor without login; prompt on save with data preserved
+✅  9. Canvas Thumbnails    → Auto-generated preview cards in the dashboard
+✅ 10. Dark Sidebar         → Sleek pure-black sidebar with responsive mobile drawer
 ```
 
 ---
 
-## 5. Folder Structure
+## 🛠️ Tech Stack
 
-```text
-glazia-mini-design-canvas/
+<table>
+  <thead>
+    <tr>
+      <th>Layer</th>
+      <th>Technology</th>
+      <th>Why</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>🖥️ <b>Frontend</b></td>
+      <td>Next.js 14 (App Router) + TypeScript</td>
+      <td>File-based routing, SSR/CSR control, strict types</td>
+    </tr>
+    <tr>
+      <td>🎨 <b>Canvas Engine</b></td>
+      <td>React Konva + Konva.js</td>
+      <td>Declarative HTML5 2D canvas with native Transformer</td>
+    </tr>
+    <tr>
+      <td>💅 <b>Styling</b></td>
+      <td>Tailwind CSS 3</td>
+      <td>Utility-first, responsive, custom Glazia palette</td>
+    </tr>
+    <tr>
+      <td>🎭 <b>Icons</b></td>
+      <td>Lucide React</td>
+      <td>600+ clean, consistent SVG icons</td>
+    </tr>
+    <tr>
+      <td>⚙️ <b>Backend</b></td>
+      <td>Node.js + Express.js</td>
+      <td>Lightweight REST API, middleware architecture</td>
+    </tr>
+    <tr>
+      <td>🍃 <b>Database</b></td>
+      <td>MongoDB + Mongoose</td>
+      <td>Flexible document store, schema validation, ODM</td>
+    </tr>
+    <tr>
+      <td>🔐 <b>Auth</b></td>
+      <td>JWT + bcrypt.js</td>
+      <td>Stateless token auth, secure password hashing</td>
+    </tr>
+    <tr>
+      <td>🌐 <b>Deploy</b></td>
+      <td>Vercel + Render + MongoDB Atlas</td>
+      <td>Production hosting with zero-config CI/CD</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+## 🏗️ Architecture
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                    🖥️  Next.js Frontend                      │
+│                                                              │
+│  useCanvas() ◄──► useHistory()   (50-step undo/redo)        │
+│       │                                                      │
+│       ▼                                                      │
+│  <CanvasStageWrapper>  (ref-safe lazy loader)                │
+│    └── <CanvasStage>   (Konva — client only, no SSR)         │
+│          └── <Stage>                                         │
+│                └── <Layer>                                   │
+│                      ├── <Rect />        background          │
+│                      ├── <CanvasElement />  per element      │
+│                      └── <SelectionTransformer />            │
+│                            └─► normalize scaleX/scaleY       │
+│                                                              │
+│  lib/api.ts  →  centralized fetch client                     │
+└───────────────────────────┬──────────────────────────────────┘
+                            │  HTTP REST (JSON)
+                            ▼
+┌──────────────────────────────────────────────────────────────┐
+│                  ⚙️  Express.js Backend                      │
+│                                                              │
+│  /api/canvases  ──►  canvasValidator  ──►  canvasController  │
+│  /api/auth      ──►  authMiddleware   ──►  authController    │
+│                              │                               │
+│                              ▼                               │
+│                       canvasService                          │
+│                              │                               │
+│                              ▼                               │
+│                  Mongoose Models (Canvas, User)              │
+│                              │                               │
+│                              ▼                               │
+│                  🍃 MongoDB Atlas / Local                    │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📁 Project Structure
+
+```
+Assignment/
 │
-├── frontend/
+├── 🖥️ frontend/
 │   ├── app/
-│   │   ├── layout.tsx              # Root HTML & Glazia metadata
-│   │   ├── globals.css             # Tailwind & workspace styles
-│   │   ├── page.tsx                # Screen 1: Landing page
-│   │   ├── canvases/
-│   │   │   └── page.tsx            # Screen 4: My Canvases Dashboard
-│   │   ├── editor/
-│   │   │   └── [id]/
-│   │   │       └── page.tsx        # Screen 5: Canvas Editor Main Workspace
-│   │   ├── login/
-│   │   │   └── page.tsx            # Screen 2: Login Page
-│   │   ├── register/
-│   │   │   └── page.tsx            # Screen 3: Register Page
-│   │   ├── profile/
-│   │   │   └── page.tsx            # Screen 9: User Profile Page
-│   │   └── not-found.tsx           # Screen 10: 404 Error Page
+│   │   ├── page.tsx                 # 🏠 Landing page
+│   │   ├── login/page.tsx           # 🔑 Login
+│   │   ├── register/page.tsx        # 📝 Register
+│   │   ├── canvases/page.tsx        # 🗂️  My Canvases dashboard
+│   │   ├── editor/[id]/page.tsx     # 🎨 Canvas Editor (main workspace)
+│   │   └── profile/page.tsx         # 👤 User Profile
 │   │
 │   ├── components/
 │   │   ├── canvas/
-│   │   │   ├── CanvasStage.tsx     # Konva Stage & Layer wrapper (client-only)
-│   │   │   ├── CanvasElement.tsx   # Rect, Circle, and Text rendering
-│   │   │   └── SelectionTransformer.tsx # Normalized Transformer
+│   │   │   ├── CanvasStage.tsx      # Konva Stage + Layer (client-only)
+│   │   │   ├── CanvasStageWrapper.tsx # Ref-safe lazy loader (fixes next/dynamic ref bug)
+│   │   │   ├── CanvasElement.tsx    # Renders all 10 element types
+│   │   │   └── SelectionTransformer.tsx
 │   │   ├── editor/
-│   │   │   ├── TopBar.tsx          # Branding, title, zoom, save/export actions
-│   │   │   ├── Toolbar.tsx         # Left vertical tool rail
-│   │   │   ├── PropertiesPanel.tsx # Right properties inspection panel
-│   │   │   ├── LayersPanel.tsx     # Layer ordering & visibility drawer
-│   │   │   ├── SaveModal.tsx       # Canvas naming & description modal
-│   │   │   └── LoadModal.tsx       # Canvas picker modal
+│   │   │   ├── TopBar.tsx           # Header: name, zoom, save, export
+│   │   │   ├── Toolbar.tsx          # Left tool rail (desktop)
+│   │   │   ├── MobileToolbar.tsx    # Bottom tab bar (mobile)
+│   │   │   ├── PropertiesPanel.tsx  # Right properties inspector
+│   │   │   ├── LayersPanel.tsx      # Layer order & visibility
+│   │   │   ├── SaveModal.tsx
+│   │   │   └── LoadModal.tsx
+│   │   ├── layout/
+│   │   │   └── Sidebar.tsx          # Black sidebar + MobilePageHeader
 │   │   └── ui/
-│   │       ├── Button.tsx          # Button with variants and loading state
-│   │       ├── Input.tsx           # Form input with validation states
-│   │       └── Modal.tsx           # Accessible modal container
+│   │       ├── Button.tsx · Input.tsx · Modal.tsx
 │   │
 │   ├── hooks/
-│   │   ├── useCanvas.ts            # Core canvas state management
-│   │   └── useHistory.ts           # 50-step undo/redo snapshot manager
+│   │   ├── useCanvas.ts             # Core canvas state (add/update/delete/zoom)
+│   │   └── useHistory.ts            # Undo/redo snapshot manager
 │   │
-│   ├── lib/
-│   │   └── api.ts                  # Centralized REST API client
-│   │
-│   ├── types/
-│   │   └── canvas.ts               # TypeScript types and interfaces
-│   │
-│   ├── public/
-│   │   ├── logo.jpg                # Glazia brand logo
-│   │   └── favicon.ico             # Glazia favicon
-│   │
-│   ├── .env.example
-│   ├── .env.local
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── tailwind.config.js
+│   ├── lib/api.ts                   # REST API client
+│   ├── types/canvas.ts              # TypeScript interfaces
+│   └── public/logo.jpg
 │
-├── backend/
-│   ├── src/
-│   │   ├── config/
-│   │   │   └── db.js               # MongoDB connection handler
-│   │   ├── controllers/
-│   │   │   ├── canvasController.js # CRUD controllers
-│   │   │   └── authController.js   # JWT authentication controller
-│   │   ├── middleware/
-│   │   │   ├── auth.js             # Optional & strict JWT middleware
-│   │   │   ├── errorHandler.js     # Centralized error formatter
-│   │   │   └── notFound.js         # 404 handler
-│   │   ├── models/
-│   │   │   ├── Canvas.js           # Canvas & elements Mongoose schema
-│   │   │   └── User.js             # User account Mongoose schema
-│   │   ├── routes/
-│   │   │   ├── canvasRoutes.js     # /api/canvases endpoints
-│   │   │   └── authRoutes.js       # /api/auth endpoints
-│   │   ├── services/
-│   │   │   └── canvasService.js    # Data persistence business logic
-│   │   ├── validators/
-│   │   │   └── canvasValidator.js  # Request payload integrity rules
-│   │   └── server.js               # Express application entrypoint
-│   │
-│   ├── test_api.js                 # Automated backend test suite
-│   ├── .env.example
-│   ├── .env
-│   └── package.json
-│
-├── glazia_windoors_private_limited_logo.jpg # Original brand logo asset
-├── .gitignore
-└── README.md
+└── ⚙️ backend/
+    └── src/
+        ├── config/db.js             # MongoDB connection
+        ├── controllers/
+        │   ├── canvasController.js  # Canvas CRUD
+        │   └── authController.js    # JWT auth
+        ├── middleware/
+        │   ├── auth.js              # protect + optionalAuth
+        │   ├── errorHandler.js
+        │   └── notFound.js
+        ├── models/
+        │   ├── Canvas.js            # Canvas + element subdocuments
+        │   └── User.js
+        ├── routes/
+        │   ├── canvasRoutes.js      # /api/canvases
+        │   └── authRoutes.js        # /api/auth
+        ├── services/canvasService.js
+        ├── validators/canvasValidator.js
+        └── server.js
 ```
 
 ---
 
-## 6. Installation & Setup
+## ⚡ Quick Start
 
 ### Prerequisites
-* **Node.js** (v18 or higher recommended; v24 verified)
-* **npm** (v9 or higher)
-* **MongoDB** (running locally on port 27017 or a MongoDB Atlas URI)
 
-### Step 1: Clone the Repository
+| Requirement | Version |
+|-------------|---------|
+| Node.js | `v18+` (v24 tested) |
+| npm | `v9+` |
+| MongoDB | Local `27017` or Atlas URI |
+
+### 1️⃣ Clone
+
 ```bash
-git clone <repository-url>
-cd Assignment
+git clone https://github.com/Harsh-2006-git/Glazia-Design-Canva.git
+cd Glazia-Design-Canva
 ```
 
-### Step 2: Configure Environment Variables
+### 2️⃣ Backend Setup
 
-**Backend (`backend/.env`):**
+```bash
+cd backend
+npm install
+
+# Copy and fill environment file
+cp .env.example .env
+```
+
+**`backend/.env`**
 ```env
 PORT=5001
 MONGODB_URI=mongodb://127.0.0.1:27017/glazia_design_canvas
 CLIENT_URL=http://localhost:3000
-JWT_SECRET=glazia_design_canvas_jwt_secret_token_change_in_production
+JWT_SECRET=your_super_secret_jwt_key_here
 NODE_ENV=development
 ```
 
-**Frontend (`frontend/.env.local`):**
+```bash
+npm run dev   # Starts on http://localhost:5001
+```
+
+### 3️⃣ Frontend Setup
+
+```bash
+cd ../frontend
+npm install
+
+# Copy and fill environment file
+cp .env.example .env.local
+```
+
+**`frontend/.env.local`**
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5001/api
 ```
 
----
-
-## 7. Running Locally
-
-### Start Backend Server
-Open a terminal in the `backend/` directory:
 ```bash
-cd backend
-npm install
-npm run dev
-```
-The REST API will start at **`http://localhost:5001`**.
-
-To verify the backend and run the automated test suite:
-```bash
-npm test
+npm run dev   # Starts on http://localhost:3000
 ```
 
-### Start Frontend Application
-In a separate terminal, start the Next.js frontend:
-```bash
-cd frontend
-npm install
-npm run dev
-```
-The frontend will start at **`http://localhost:3000`**.
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+> 💡 Open **two terminals** — one for backend, one for frontend.
 
 ---
 
-## 8. API Documentation
+## 🔌 API Reference
 
-All endpoints produce standardized JSON responses:
-* **Success**: `{ "success": true, "data": ... }`
-* **Error**: `{ "success": false, "message": "...", "errors": [] }`
+All responses follow a consistent envelope:
 
-### Canvas Endpoints
+```json
+// ✅ Success
+{ "success": true, "data": { ... } }
 
-| Method | Endpoint | Description | Status Code |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/canvases` | Create and save a new canvas | `201 Created` |
-| `GET` | `/api/canvases` | Retrieve all saved canvases | `200 OK` |
-| `GET` | `/api/canvases/:id` | Retrieve single canvas by ID | `200 OK` / `404` |
-| `PUT` | `/api/canvases/:id` | Update an existing canvas document | `200 OK` / `400` / `404` |
-| `DELETE` | `/api/canvases/:id` | Delete canvas by ID | `200 OK` / `404` |
+// ❌ Error
+{ "success": false, "message": "Validation failed", "errors": ["..."] }
+```
 
-### Sample Request Body (`POST` / `PUT`)
+### 🗂️ Canvas Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `POST` | `/api/canvases` | Create new canvas | Optional |
+| `GET` | `/api/canvases` | List all canvases | Optional |
+| `GET` | `/api/canvases/:id` | Get canvas by ID | Optional |
+| `PUT` | `/api/canvases/:id` | Update canvas | Optional |
+| `DELETE` | `/api/canvases/:id` | Delete canvas | Optional |
+
+### 🔐 Auth Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/auth/register` | Create account (`name`, `email`, `password`) |
+| `POST` | `/api/auth/login` | Login → returns JWT token |
+| `GET` | `/api/auth/me` | Get current user profile |
+| `PUT` | `/api/auth/profile` | Update name or password |
+
+### 📦 Sample Canvas Payload
+
 ```json
 {
-  "name": "Glazia Demo Canvas",
-  "description": "Sample design with geometric elements",
+  "name": "My First Design",
+  "description": "A sample canvas with shapes",
   "width": 1000,
   "height": 650,
   "backgroundColor": "#ffffff",
@@ -290,39 +362,22 @@ All endpoints produce standardized JSON responses:
     {
       "id": "el_001",
       "type": "rectangle",
-      "x": 100,
-      "y": 100,
-      "width": 150,
-      "height": 100,
+      "x": 425, "y": 275,
+      "width": 150, "height": 100,
       "rotation": 0,
       "fill": "#2563eb",
-      "stroke": "#111827",
-      "strokeWidth": 1,
+      "stroke": "", "strokeWidth": 0,
+      "cornerRadius": 4,
       "visible": true
     },
     {
       "id": "el_002",
-      "type": "circle",
-      "x": 200,
-      "y": 150,
-      "width": 120,
-      "height": 120,
-      "rotation": 0,
-      "fill": "#ef476f",
-      "stroke": "",
-      "strokeWidth": 0,
-      "visible": true
-    },
-    {
-      "id": "el_003",
       "type": "text",
-      "x": 150,
-      "y": 150,
-      "width": 200,
-      "height": 50,
+      "x": 380, "y": 300,
+      "width": 240, "height": 50,
       "rotation": 0,
       "fill": "#111827",
-      "text": "Glazia",
+      "text": "Hello Glazia",
       "fontSize": 28,
       "fontFamily": "Inter",
       "visible": true
@@ -331,91 +386,165 @@ All endpoints produce standardized JSON responses:
 }
 ```
 
-### Auth Endpoints (Bonus)
-* `POST /api/auth/register`: Create user account (`name`, `email`, `password`)
-* `POST /api/auth/login`: Authenticate user and receive JWT token
-* `GET  /api/auth/me`: Fetch authenticated user profile
-* `PUT  /api/auth/profile`: Update user name or password
+**Supported element types:** `rectangle` · `circle` · `star` · `triangle` · `diamond` · `hexagon` · `line` · `arrow` · `text` · `badge`
 
 ---
 
-## 9. Data Model
+## 🗄️ Data Models
 
-### Canvas Schema (`Canvas.js`)
-* `name`: String, required, max 120 chars.
-* `description`: String, optional, max 500 chars.
-* `width`: Number, required, default `1000`, min `100`, max `4000`.
-* `height`: Number, required, default `650`, min `100`, max `4000`.
-* `backgroundColor`: String, default `#ffffff`.
-* `elements`: Array of validated subdocuments:
-  * `id`: String (stable frontend unique ID)
-  * `type`: Enum `['rectangle', 'circle', 'text']`
-  * `x`: Number
-  * `y`: Number
-  * `width`: Number
-  * `height`: Number
-  * `rotation`: Number (degrees 0–360)
-  * `fill`: String (hex color)
-  * `stroke`: String
-  * `strokeWidth`: Number
-  * `text`: String (for text elements)
-  * `fontSize`: Number
-  * `fontFamily`: String
-  * `visible`: Boolean
-* `userId`: ObjectId (optional ref to User)
-* `timestamps`: `createdAt`, `updatedAt`
+### Canvas Schema
 
----
-
-## 10. Key Engineering & Design Decisions
-
-1. **Why React Konva?**  
-   React Konva allows declarative mapping between React component state and HTML5 Canvas scenegraph nodes. The Konva Transformer provides high-precision transformation handles natively.
-2. **Authoritative React State**:  
-   Konva does NOT hold authoritative element state. React state (`useCanvas`) is the single source of truth. All Konva drag and transform events propagate back to React state.
-3. **Transformer Dimension Normalization**:  
-   Konva Transformer alters `scaleX` and `scaleY` during drag resizing. To avoid cumulative scaling issues and corrupting coordinates upon reload, dimensions are normalized:
-   ```ts
-   const newWidth = Math.max(20, Math.round(node.width() * scaleX));
-   const newHeight = Math.max(20, Math.round(node.height() * scaleY));
-   node.scaleX(1);
-   node.scaleY(1);
-   updateElement(id, { width: newWidth, height: newHeight, rotation: node.rotation() });
-   ```
-4. **Service / Controller / Model Separation**:  
-   Backend code is structured cleanly into routes, request validators, controllers, and services for maximum maintainability and testability.
-5. **Client-Side Konva Dynamic Import**:  
-   Next.js server-side rendering does not have access to DOM/HTML Canvas. The canvas stage is loaded dynamically with `ssr: false` to guarantee zero hydration mismatch or `window is not defined` errors.
+```
+Canvas
+ ├── name             String  required  max:120
+ ├── description      String  optional  max:500
+ ├── width            Number  100–4000  default:1000
+ ├── height           Number  100–4000  default:650
+ ├── backgroundColor  String  default:"#ffffff"
+ ├── userId           ObjectId (ref: User, nullable)
+ ├── createdAt / updatedAt  (timestamps)
+ └── elements[]
+       ├── id            String (stable frontend ID)
+       ├── type          Enum (10 types)
+       ├── x / y         Number
+       ├── width / height Number (min: 1)
+       ├── rotation      Number (degrees)
+       ├── fill          String (hex)
+       ├── stroke        String
+       ├── strokeWidth   Number
+       ├── cornerRadius  Number
+       ├── text          String
+       ├── fontSize      Number (min: 6)
+       ├── fontFamily    String
+       └── visible       Boolean
+```
 
 ---
 
-## 11. Testing & Verification Checklist
+## ⌨️ Keyboard Shortcuts
 
-- [x] Create a new canvas with custom dimensions and background color
-- [x] Add Rectangle with default values (`#2563eb`, $150 \times 100$)
-- [x] Add Circle with default values (`#ef476f`, diameter $120$)
-- [x] Add Text with default values (`Hello World`, font size $28$)
-- [x] Select elements; Konva Transformer handles appear
-- [x] Deselect when clicking canvas background
-- [x] Drag elements across canvas; coordinates update on `onDragEnd`
-- [x] Resize elements using 8-point handles; dimensions normalize accurately
-- [x] Rotate elements; degree updates in properties panel
-- [x] Edit properties (X, Y, Width, Height, Fill, Stroke, Text content, Font size)
-- [x] Delete element via Properties panel or <kbd>Delete</kbd> key
-- [x] Save canvas to MongoDB (`POST /api/canvases`)
-- [x] List saved canvases on Dashboard (`GET /api/canvases`)
-- [x] Load previously saved canvas into editor (`GET /api/canvases/:id`)
-- [x] Update existing canvas document without duplication (`PUT /api/canvases/:id`)
-- [x] Delete canvas with confirmation modal (`DELETE /api/canvases/:id`)
-- [x] Layer reordering (bring forward, send backward, toggle visibility)
-- [x] Undo / Redo history with keyboard shortcuts
-- [x] Debounced autosave (1.5s debounce with status indicator)
-- [x] PNG export with selection handles hidden
-- [x] Server validation (400 responses for malformed payloads or invalid IDs)
-- [x] Next.js production build (`npm run build`) compiles cleanly
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl + S` | Save canvas |
+| `Ctrl + Z` | Undo |
+| `Ctrl + Shift + Z` | Redo |
+| `Delete` / `Backspace` | Delete selected element |
+| `Escape` | Deselect element |
 
 ---
 
-## 12. License
+## 🌐 Deployment
 
-Created for the **Glazia Full Stack Developer Intern Assignment**. All rights reserved.
+| Service | Platform | URL |
+|---------|----------|-----|
+| 🖥️ Frontend | Vercel | https://glazia-design-canva.vercel.app/ |
+| ⚙️ Backend API | Render | https://glazia-design-canva-backend.onrender.com |
+| 🍃 Database | MongoDB Atlas | `glazia_design_canvas` collection |
+
+### Production Environment Variables
+
+**Vercel (Frontend)**
+```env
+NEXT_PUBLIC_API_URL=https://glazia-design-canva-backend.onrender.com/api
+```
+
+**Render (Backend)**
+```env
+PORT=5001
+NODE_ENV=production
+MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/glazia_design_canvas
+CLIENT_URL=https://glazia-design-canva.vercel.app
+JWT_SECRET=<your-32+-char-random-secret>
+```
+
+> ⚠️ **MongoDB Atlas** — whitelist `0.0.0.0/0` in Network Access for Render's dynamic IPs.
+
+---
+
+## ⚠️ Known Limitations
+
+| Limitation | Detail |
+|------------|--------|
+| 🖼️ No real-time collaboration | Single-user editor only; no WebSocket/CRDT sync |
+| 📷 No image uploads | Image element type not yet implemented |
+| 📐 No vector paths | Pen/bezier tool not available |
+| 🔒 Canvas ownership | Canvases with no user ID are visible to all users |
+| 📦 No versioning | No per-canvas version history on the server |
+| 📱 Konva on mobile | Touch-based resizing via transformer is limited by Konva's mobile support |
+
+---
+
+## 🧠 Engineering Decisions
+
+### 1. React as Single Source of Truth
+Konva does **not** hold authoritative state. All element positions, dimensions, and properties live in `useCanvas()` (React state). Konva events (`onDragEnd`, `onTransformEnd`) immediately write back to React — preventing the canvas from diverging from the database model.
+
+### 2. Transformer Scale Normalisation
+Konva Transformer modifies `scaleX`/`scaleY` during resize. Without normalisation, cumulative scale drift corrupts coordinates after each load cycle. Fix:
+
+```ts
+const newWidth = Math.max(20, Math.round(node.width() * scaleX));
+node.scaleX(1); // always reset to 1
+```
+
+### 3. `CanvasStageWrapper` (solves `next/dynamic` ref bug)
+`next/dynamic()` wraps components in `LoadableComponent` — a plain function component that **cannot forward refs**. The fix: a manual `forwardRef` wrapper that `useEffect`-imports the Konva stage client-side and relays `getStage()` + `exportToDataURL()` via `useImperativeHandle`.
+
+### 4. Export PNG Zoom Compensation
+`stage.toDataURL()` works in pixel space. At 80% zoom the stage is 800px wide — passing `width: 1000` exports blank pixels. Fix:
+
+```ts
+const currentScale = stage.scaleX();
+stage.toDataURL({
+  width:  canvas.width  * currentScale,
+  pixelRatio: 2 / currentScale   // always outputs full-res
+});
+```
+
+### 5. Centered Element Placement
+All new elements appear at the centre of the canvas (`cx = width/2 - elementWidth/2`) with a small diagonal stagger offset, so elements never pile up in the top-left corner.
+
+### 6. Service Layer Pattern
+Backend separates **Routes → Validators → Controllers → Services → Models** for clean separation of concerns and easier unit testing of business logic.
+
+---
+
+## ✅ Testing Checklist
+
+- [x] Create blank canvas with custom size and background
+- [x] Add all 10 element types — they spawn centred on canvas
+- [x] Select element → Konva transformer handles appear
+- [x] Deselect on empty canvas click
+- [x] Drag elements — coordinates sync on `onDragEnd`
+- [x] Resize via 8-point handles — scale normalised correctly
+- [x] Rotate element — angle updates in Properties panel
+- [x] Edit all properties (X, Y, W, H, fill, stroke, text, font)
+- [x] Delete element via Properties panel or `Delete` key
+- [x] Undo/Redo 50 steps
+- [x] Layers panel: reorder, visibility toggle, delete
+- [x] Save canvas (`POST /api/canvases` → 201)
+- [x] Load canvas from dashboard
+- [x] Update canvas (`PUT /api/canvases/:id` → 200)
+- [x] Delete canvas with confirm modal
+- [x] Export PNG at full resolution regardless of zoom level
+- [x] Autosave after 1.5s of inactivity
+- [x] Register / Login / Profile update
+- [x] Guest mode — edit without login, prompt on save
+- [x] Mobile bottom toolbar, right-side property/layers sidebars
+- [x] API returns 400 for invalid element types or missing required fields
+- [x] `npm run build` compiles without errors
+
+---
+
+## 📄 License
+
+Created for the **Glazia Full Stack Developer Intern Technical Assignment**.
+
+<div align="center">
+
+Made with ❤️ by **Harsh** · Powered by **Next.js**, **Konva**, **MongoDB**
+
+[![GitHub](https://img.shields.io/badge/GitHub-Harsh--2006--git-181717?style=flat-square&logo=github)](https://github.com/Harsh-2006-git/Glazia-Design-Canva)
+[![Live Demo](https://img.shields.io/badge/Live-glazia--design--canva.vercel.app-5865F2?style=flat-square&logo=vercel)](https://glazia-design-canva.vercel.app/)
+
+</div>
