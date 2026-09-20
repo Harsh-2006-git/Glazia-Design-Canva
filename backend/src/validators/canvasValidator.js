@@ -52,8 +52,9 @@ const validateCanvasPayload = (data, isUpdate = false) => {
         if (!el.id || typeof el.id !== 'string') {
           errors.push(`Element at index ${index} must have a valid string id`);
         }
-        if (!['rectangle', 'circle', 'text'].includes(el.type)) {
-          errors.push(`Element at index ${index} has invalid type: ${el.type}. Allowed types: rectangle, circle, text`);
+        const ALLOWED_TYPES = ['rectangle', 'circle', 'star', 'triangle', 'diamond', 'hexagon', 'line', 'arrow', 'text', 'badge'];
+        if (!ALLOWED_TYPES.includes(el.type)) {
+          errors.push(`Element at index ${index} has invalid type: ${el.type}. Allowed types: ${ALLOWED_TYPES.join(', ')}`);
         }
         if (typeof el.x !== 'number' || isNaN(el.x)) {
           errors.push(`Element at index ${index} (${el.id || 'unnamed'}) must have a numeric x position`);
