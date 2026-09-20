@@ -1,6 +1,5 @@
 <div align="center">
 
-<img src="frontend/public/logo.jpg" alt="Glazia Logo" width="90" height="90" style="border-radius: 20px; margin-bottom: 12px" />
 
 # ✦ Glazia Design Canvas
 
