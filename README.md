@@ -15,6 +15,11 @@
 
 <br/>
 
+---
+<img width="1891" height="906" alt="image" src="https://github.com/user-attachments/assets/97377645-cb8b-4521-a108-64e6176ed485" />
+
+---
+
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-glazia--design--canva.vercel.app-5865F2?style=for-the-badge)](https://glazia-design-canva.vercel.app/)
 [![API](https://img.shields.io/badge/🔌_API-glazia--backend.onrender.com-10B981?style=for-the-badge)](https://glazia-design-canva-backend.onrender.com)
 
