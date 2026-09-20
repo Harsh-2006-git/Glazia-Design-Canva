@@ -1,4 +1,14 @@
-export type ElementType = 'rectangle' | 'circle' | 'text';
+export type ElementType =
+  | 'rectangle'
+  | 'circle'
+  | 'star'
+  | 'triangle'
+  | 'diamond'
+  | 'hexagon'
+  | 'line'
+  | 'arrow'
+  | 'text'
+  | 'badge';
 
 export interface CanvasElement {
   id: string;
@@ -11,6 +21,7 @@ export interface CanvasElement {
   fill: string;
   stroke?: string;
   strokeWidth?: number;
+  cornerRadius?: number;
   text?: string;
   fontSize?: number;
   fontFamily?: string;
@@ -47,4 +58,4 @@ export interface User {
   createdAt?: string;
 }
 
-export type ToolType = 'select' | 'rectangle' | 'circle' | 'text';
+export type ToolType = 'select' | ElementType;

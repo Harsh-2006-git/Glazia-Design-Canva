@@ -36,7 +36,13 @@ export default function RegisterPage() {
     if (res.success && res.data?.token) {
       localStorage.setItem('glazia_auth_token', res.data.token);
       localStorage.setItem('glazia_user', JSON.stringify(res.data));
-      router.push('/canvases');
+      
+      const hasPending = typeof window !== 'undefined' ? localStorage.getItem('glazia_pending_canvas') : null;
+      if (hasPending) {
+        router.push('/editor/new');
+      } else {
+        router.push('/canvases');
+      }
     } else {
       setError(res.message || 'Registration failed');
     }

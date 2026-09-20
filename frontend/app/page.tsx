@@ -26,6 +26,16 @@ import {
 export default function LandingPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [activeFeatureIndex, setActiveFeatureIndex] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('glazia_auth_token');
+      setIsLoggedIn(!!token);
+    }
+  }, []);
+
+  const getStartedLink = isLoggedIn ? '/editor/new' : '/login';
 
   const featuresList = [
     {
@@ -143,15 +153,17 @@ export default function LandingPage() {
 
           {/* Right side: Login, Get Started */}
           <div className="flex items-center gap-2 sm:gap-4">
-            <Link
-              href="/login"
-              className="px-3.5 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-[15px] font-semibold text-[#0a192f] bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all shadow-xs"
-            >
-              Login
-            </Link>
+            {!isLoggedIn && (
+              <Link
+                href="/login"
+                className="px-3.5 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-[15px] font-semibold text-[#0a192f] bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all shadow-xs"
+              >
+                Login
+              </Link>
+            )}
 
             <Link
-              href="/editor/new"
+              href={getStartedLink}
               className="px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-[15px] font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all shadow-md shadow-blue-500/20 active:scale-95"
             >
               Get Started
@@ -194,7 +206,7 @@ export default function LandingPage() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row w-full sm:w-auto items-stretch sm:items-center justify-start gap-2.5 sm:gap-4 pt-1.5 sm:pt-2">
               <Link
-                href="/editor/new"
+                href={getStartedLink}
                 className="inline-flex items-center justify-center gap-2.5 px-6 py-3 sm:py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm sm:text-[15px] rounded-xl shadow-lg shadow-blue-600/25 transition-all active:scale-95"
               >
                 <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-white">

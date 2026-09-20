@@ -9,7 +9,7 @@ const CanvasElementSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['rectangle', 'circle', 'text']
+    enum: ['rectangle', 'circle', 'star', 'triangle', 'diamond', 'hexagon', 'line', 'arrow', 'text', 'badge']
   },
   x: {
     type: Number,
@@ -46,6 +46,11 @@ const CanvasElementSchema = new mongoose.Schema({
     default: ''
   },
   strokeWidth: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  cornerRadius: {
     type: Number,
     default: 0,
     min: 0

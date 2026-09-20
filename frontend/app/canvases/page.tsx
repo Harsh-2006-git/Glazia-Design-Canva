@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
+import { Sidebar, MobilePageHeader } from '@/components/layout/Sidebar';
 import { CanvasData } from '@/types/canvas';
 import { getCanvases, deleteCanvas, createCanvas } from '@/lib/api';
 
@@ -165,80 +166,41 @@ export default function CanvasesDashboard() {
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-50">
-      {/* Left Sidebar matching Screen 4 in Reference Board */}
-      <aside className="w-64 bg-slate-900 text-white flex flex-col justify-between hidden md:flex select-none flex-shrink-0">
-        <div>
-          {/* Brand Header */}
-          <div className="h-16 border-b border-slate-800 px-6 flex items-center gap-3">
-            <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-slate-700 flex-shrink-0">
-              <Image src="/logo.jpg" alt="Glazia Logo" width={32} height={32} className="object-cover w-full h-full" priority />
-            </div>
-            <span className="font-bold text-lg tracking-tight">Glazia</span>
-          </div>
-
-          {/* Navigation links */}
-          <nav className="p-4 space-y-1.5">
-            <Link
-              href="/"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
-            >
-              <Layout className="w-4 h-4" />
-              <span>Home</span>
-            </Link>
-
-            <Link
-              href="/canvases"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold bg-blue-600 text-white shadow-sm transition-colors"
-            >
-              <FolderOpen className="w-4 h-4" />
-              <span>My Canvases</span>
-            </Link>
-
-            <button
-              onClick={handleCreateNew}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors text-left"
-            >
-              <Plus className="w-4 h-4" />
-              <span>New Canvas</span>
-            </button>
-
-            <Link
-              href="/profile"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
-            >
-              <UserIcon className="w-4 h-4" />
-              <span>Profile</span>
-            </Link>
-          </nav>
-        </div>
-
-        {/* Bottom logout / status */}
-        <div className="p-4 border-t border-slate-800">
-          <Link
-            href="/login"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-red-400 hover:bg-slate-800/60 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Sign In / Switch</span>
-          </Link>
-        </div>
-      </aside>
+    <div className="min-h-screen flex bg-slate-50/80">
+      {/* Desktop Sidebar */}
+      <Sidebar currentPath="/canvases" />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Bar for mobile & actions */}
-        <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-10">
-          <div className="flex items-center gap-3 md:hidden">
-            <div className="relative w-7 h-7 rounded-lg overflow-hidden border border-slate-200">
-              <Image src="/logo.jpg" alt="Glazia" width={28} height={28} className="object-cover" />
-            </div>
-            <span className="font-bold text-base text-slate-900">Glazia</span>
-          </div>
+        {/* Mobile header with hamburger */}
+        <MobilePageHeader
+          title="My Canvases"
+          subtitle="Your saved designs"
+          rightSlot={
+            <>
+              <button
+                onClick={fetchCanvases}
+                className="p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
+                title="Refresh"
+              >
+                <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+              </button>
+              <button
+                onClick={handleCreateNew}
+                className="flex items-center gap-1.5 bg-blue-600 text-white text-sm font-semibold px-3 py-1.5 rounded-xl hover:bg-blue-700 active:scale-95 transition-all"
+              >
+                <Plus className="w-4 h-4" />
+                New
+              </button>
+            </>
+          }
+        />
 
-          <div className="hidden md:block">
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">My Canvases</h1>
-            <p className="text-xs text-slate-500">Manage your saved designs and layouts</p>
+        {/* Desktop Top Bar */}
+        <header className="hidden md:flex h-16 bg-white border-b border-slate-200/80 px-6 sm:px-10 items-center justify-between sticky top-0 z-20 shadow-2xs">
+          <div>
+            <h1 className="text-lg font-bold text-slate-900 tracking-tight">My Canvases</h1>
+            <p className="text-xs text-slate-500">Manage your saved designs and graphic layouts</p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -263,7 +225,7 @@ export default function CanvasesDashboard() {
         </header>
 
         {/* Body Container */}
-        <main className="p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-6">
+        <main className="p-4 sm:p-6 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-4 sm:space-y-6">
           {/* Search Bar */}
           <div className="relative max-w-md">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />

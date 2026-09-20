@@ -41,7 +41,7 @@ export const CanvasStage = forwardRef<CanvasStageRef, CanvasStageProps>(({
       const stage = stageRef.current;
       if (!stage) return null;
 
-      // Temporarily hide the transformer node if active
+      // Hide the transformer during export
       const tr = stage.findOne('Transformer') as Konva.Transformer | undefined;
       const prevNodes = tr ? tr.nodes() : [];
       if (tr) {
@@ -49,16 +49,23 @@ export const CanvasStage = forwardRef<CanvasStageRef, CanvasStageProps>(({
         tr.getLayer()?.batchDraw();
       }
 
-      // Export only the canvas board boundaries
+      // The stage is rendered at canvas.width * scale pixels wide.
+      // toDataURL works in the stage's pixel space, so we need to
+      // pass the full scaled dimensions and adjust pixelRatio so the
+      // exported image always comes out at full canvas resolution.
+      const currentScale = stage.scaleX();   // == zoom/100
+      const adjustedPixelRatio = pixelRatio / currentScale;
+
       const dataUrl = stage.toDataURL({
         x: 0,
         y: 0,
-        width: canvas.width,
-        height: canvas.height,
-        pixelRatio,
+        width: canvas.width * currentScale,
+        height: canvas.height * currentScale,
+        pixelRatio: adjustedPixelRatio,
+        mimeType: 'image/png',
       });
 
-      // Restore transformer nodes
+      // Restore transformer
       if (tr && prevNodes.length > 0) {
         tr.nodes(prevNodes);
         tr.getLayer()?.batchDraw();

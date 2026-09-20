@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  webpack: (config) => {
-    config.externals = [...(config.externals || []), { canvas: 'canvas' }];
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals = [...(config.externals || []), 'canvas', 'konva'];
+    }
     return config;
   },
 };

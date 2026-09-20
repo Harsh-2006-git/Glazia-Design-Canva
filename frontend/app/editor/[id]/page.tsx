@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { TopBar } from '@/components/editor/TopBar';
 import { Toolbar } from '@/components/editor/Toolbar';
 import { PropertiesPanel } from '@/components/editor/PropertiesPanel';
 import { LayersPanel } from '@/components/editor/LayersPanel';
+import { MobileToolbar } from '@/components/editor/MobileToolbar';
 import { SaveModal } from '@/components/editor/SaveModal';
 import { LoadModal } from '@/components/editor/LoadModal';
 import { Modal } from '@/components/ui/Modal';
@@ -15,23 +15,8 @@ import { useCanvas } from '@/hooks/useCanvas';
 import { getCanvas, createCanvas, updateCanvas, deleteCanvas } from '@/lib/api';
 import { CanvasData } from '@/types/canvas';
 import { CanvasStageRef } from '@/components/canvas/CanvasStage';
-import { Loader2, AlertTriangle } from 'lucide-react';
-
-// Dynamic import with ssr: false for Konva Stage to prevent SSR/window errors
-const CanvasStage = dynamic(
-  () => import('@/components/canvas/CanvasStage').then((mod) => mod.CanvasStage),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex-1 flex items-center justify-center bg-slate-100">
-        <div className="flex flex-col items-center gap-2 text-slate-500">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          <p className="text-sm font-medium">Initializing Glazia Canvas Engine...</p>
-        </div>
-      </div>
-    ),
-  }
-);
+import { CanvasStageWrapper } from '@/components/canvas/CanvasStageWrapper';
+import { Loader2, AlertTriangle, Sparkles, X } from 'lucide-react';
 
 export default function EditorPage() {
   const params = useParams();
@@ -69,7 +54,9 @@ export default function EditorPage() {
 
   // Editor UI state
   const [isLayersOpen, setIsLayersOpen] = useState(false);
+  const [isMobilePropertiesOpen, setIsMobilePropertiesOpen] = useState(false);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [isGuestAuthModalOpen, setIsGuestAuthModalOpen] = useState(false);
   const [isLoadModalOpen, setIsLoadModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLoadingCanvas, setIsLoadingCanvas] = useState(false);
@@ -81,6 +68,26 @@ export default function EditorPage() {
   // Debounced Autosave ref
   const autosaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Helper to check authentication
+  const isUserAuthenticated = () => {
+    if (typeof window === 'undefined') return false;
+    return !!localStorage.getItem('glazia_auth_token');
+  };
+
+  // Helper to store current canvas state in localStorage for guest login flow
+  const saveCanvasLocallyForGuest = (overrideName?: string, overrideDesc?: string) => {
+    if (typeof window === 'undefined') return;
+    const pendingData = {
+      name: overrideName || canvas.name || 'Untitled Canvas',
+      description: overrideDesc || canvas.description || '',
+      width: canvas.width,
+      height: canvas.height,
+      backgroundColor: canvas.backgroundColor,
+      elements: canvas.elements,
+    };
+    localStorage.setItem('glazia_pending_canvas', JSON.stringify(pendingData));
+  };
+
   // Show transient toast
   const showToast = (type: 'success' | 'error', text: string) => {
     setFeedbackMessage({ type, text });
@@ -88,6 +95,53 @@ export default function EditorPage() {
       setFeedbackMessage(null);
     }, 3500);
   };
+
+  // Auto-save pending canvas created during guest session upon logging in
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const token = localStorage.getItem('glazia_auth_token');
+    const pendingRaw = localStorage.getItem('glazia_pending_canvas');
+
+    if (token && pendingRaw) {
+      try {
+        const pendingData = JSON.parse(pendingRaw);
+        if (pendingData.elements && pendingData.elements.length > 0) {
+          loadCanvas(pendingData);
+          setIsSaving(true);
+          setSaveStatus('saving');
+
+          createCanvas({
+            name: pendingData.name || 'My Guest Canvas',
+            description: pendingData.description || '',
+            width: pendingData.width,
+            height: pendingData.height,
+            backgroundColor: pendingData.backgroundColor,
+            elements: pendingData.elements,
+          }).then((res) => {
+            setIsSaving(false);
+            if (res.success && res.data) {
+              localStorage.removeItem('glazia_pending_canvas');
+              setCanvas((prev) => ({
+                ...prev,
+                _id: res.data!._id,
+                name: res.data!.name,
+                description: res.data!.description,
+              }));
+              setSaveStatus('saved');
+              showToast('success', 'Your guest canvas design was saved to your account!');
+              router.replace(`/editor/${res.data._id}`);
+            } else {
+              setSaveStatus('unsaved');
+              showToast('error', res.message || 'Failed to save guest canvas');
+            }
+          });
+        }
+      } catch (err) {
+        console.error('Failed to parse pending canvas:', err);
+        localStorage.removeItem('glazia_pending_canvas');
+      }
+    }
+  }, [loadCanvas, setCanvas, router]);
 
   // Load existing canvas on mount if ID is not "new"
   useEffect(() => {
@@ -109,7 +163,10 @@ export default function EditorPage() {
           setIsLoadingCanvas(false);
         });
     } else {
-      resetCanvas();
+      const pendingRaw = typeof window !== 'undefined' ? localStorage.getItem('glazia_pending_canvas') : null;
+      if (!pendingRaw) {
+        resetCanvas();
+      }
       setSaveStatus('saved');
     }
   }, [canvasId, loadCanvas, resetCanvas]);
@@ -200,6 +257,12 @@ export default function EditorPage() {
 
   // Save Trigger
   const handleSaveTrigger = () => {
+    if (!isUserAuthenticated()) {
+      saveCanvasLocallyForGuest();
+      setIsGuestAuthModalOpen(true);
+      return;
+    }
+
     if (!canvas._id) {
       // Prompt modal for canvas title & description on first save
       setIsSaveModalOpen(true);
@@ -210,6 +273,12 @@ export default function EditorPage() {
   };
 
   const handleDirectSave = async () => {
+    if (!isUserAuthenticated()) {
+      saveCanvasLocallyForGuest();
+      setIsGuestAuthModalOpen(true);
+      return;
+    }
+
     if (!canvas._id) {
       setIsSaveModalOpen(true);
       return;
@@ -236,6 +305,13 @@ export default function EditorPage() {
   };
 
   const handleModalSave = async (name: string, description: string) => {
+    if (!isUserAuthenticated()) {
+      saveCanvasLocallyForGuest(name, description);
+      setIsSaveModalOpen(false);
+      setIsGuestAuthModalOpen(true);
+      return;
+    }
+
     setIsSaving(true);
     setSaveStatus('saving');
 
@@ -365,59 +441,192 @@ export default function EditorPage() {
       />
 
       {/* Main Workspace Layout: Toolbar | Canvas Stage | Properties / Layers */}
+      {/* Desktop layout: side toolbar + right panel. Mobile: full canvas + bottom tab bar. */}
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Left Toolbar */}
-        <Toolbar
+        {/* Left Toolbar — desktop only */}
+        <div className="hidden md:flex">
+          <Toolbar
+            activeTool={activeTool}
+            onToolSelect={setActiveTool}
+            onAddElement={addElement}
+            isLayersOpen={isLayersOpen}
+            onToggleLayers={() => setIsLayersOpen(!isLayersOpen)}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            onUndo={undo}
+            onRedo={redo}
+          />
+        </div>
+
+        {/* Center Canvas Stage — fills remaining space; on mobile add bottom padding for tab bar */}
+        <div className="flex-1 flex flex-col overflow-hidden pb-16 md:pb-0">
+          {isLoadingCanvas ? (
+            <div className="flex-1 flex items-center justify-center bg-slate-100">
+              <div className="flex flex-col items-center gap-2 text-slate-500">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <p className="text-sm font-medium">Loading canvas from MongoDB...</p>
+              </div>
+            </div>
+          ) : (
+            <CanvasStageWrapper
+              ref={stageComponentRef}
+              canvas={canvas}
+              selectedElementId={selectedElementId}
+              zoom={zoom}
+              onSelectElement={selectElement}
+              onUpdateElement={updateElement}
+            />
+          )}
+        </div>
+
+        {/* Optional Layers Drawer — right sidebar on mobile, side panel on desktop */}
+        {isLayersOpen && (
+          <>
+            {/* Mobile: full-height right sidebar */}
+            <div className="md:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setIsLayersOpen(false)} />
+            <div className="md:hidden fixed inset-y-0 right-0 z-50 w-72 max-w-[85vw] bg-white border-l border-slate-200 shadow-2xl flex flex-col">
+              {/* Left-edge pull tab to dismiss */}
+              <button
+                onClick={() => setIsLayersOpen(false)}
+                className="absolute -left-8 top-1/2 -translate-y-1/2 w-8 h-16 bg-white border border-r-0 border-slate-200 rounded-l-2xl shadow-lg flex flex-col items-center justify-center gap-1 hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                aria-label="Close layers"
+              >
+                <div className="w-1 h-5 bg-slate-400 rounded-full" />
+                <div className="w-1 h-3 bg-slate-300 rounded-full" />
+              </button>
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200 bg-slate-50 flex-shrink-0">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  <h3 className="font-bold text-slate-900 text-sm">Layers</h3>
+                  <span className="text-xs text-slate-400">({canvas.elements.length})</span>
+                </div>
+                <button onClick={() => setIsLayersOpen(false)} className="p-1.5 rounded-lg hover:bg-slate-200 transition-colors">
+                  <X className="w-4 h-4 text-slate-500" />
+                </button>
+              </div>
+              <div className="overflow-y-auto flex-1">
+                <LayersPanel
+                  elements={canvas.elements}
+                  selectedElementId={selectedElementId}
+                  onSelectElement={(id) => { selectElement(id); setIsLayersOpen(false); }}
+                  onMoveLayer={moveLayer}
+                  onToggleVisibility={toggleVisibility}
+                  onDeleteElement={deleteElement}
+                  onClose={() => setIsLayersOpen(false)}
+                />
+              </div>
+            </div>
+            {/* Desktop: stays as side panel */}
+            <div className="hidden md:flex">
+              <LayersPanel
+                elements={canvas.elements}
+                selectedElementId={selectedElementId}
+                onSelectElement={selectElement}
+                onMoveLayer={moveLayer}
+                onToggleVisibility={toggleVisibility}
+                onDeleteElement={deleteElement}
+                onClose={() => setIsLayersOpen(false)}
+              />
+            </div>
+          </>
+        )}
+
+        {/* Right Properties Panel — desktop only as side panel */}
+        <div className="hidden md:flex">
+          <PropertiesPanel
+            selectedElement={selectedElement}
+            canvas={canvas}
+            onUpdateElement={updateElement}
+            onDeleteSelected={deleteSelectedElement}
+            onUpdateCanvasMeta={updateCanvasMeta}
+          />
+        </div>
+
+        {/* Mobile: persistent right-edge opener tabs (only when panels are closed) */}
+        {!isMobilePropertiesOpen && !isLayersOpen && (
+          <div className="md:hidden fixed right-0 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2">
+            {/* Layers opener tab */}
+            <button
+              onClick={() => setIsLayersOpen(true)}
+              className="w-8 bg-white border border-r-0 border-slate-300 rounded-l-xl shadow-md flex flex-col items-center justify-center py-3 gap-1 text-slate-500 hover:text-blue-600 hover:bg-blue-50 active:scale-95 transition-all"
+              aria-label="Open layers"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              <span className="text-[9px] font-bold uppercase tracking-wide" style={{writingMode:'vertical-rl', transform:'rotate(180deg)', marginTop: 4}}>Layers</span>
+            </button>
+            {/* Properties opener tab */}
+            <button
+              onClick={() => setIsMobilePropertiesOpen(true)}
+              className="w-8 bg-white border border-r-0 border-slate-300 rounded-l-xl shadow-md flex flex-col items-center justify-center py-3 gap-1 text-slate-500 hover:text-blue-600 hover:bg-blue-50 active:scale-95 transition-all"
+              aria-label="Open properties"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              <span className="text-[9px] font-bold uppercase tracking-wide" style={{writingMode:'vertical-rl', transform:'rotate(180deg)', marginTop: 4}}>Props</span>
+            </button>
+          </div>
+        )}
+
+        {/* Mobile Properties Sidebar — slides in from right */}
+        {isMobilePropertiesOpen && (
+          <>
+            <div className="md:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setIsMobilePropertiesOpen(false)} />
+            <div className="md:hidden fixed inset-y-0 right-0 z-50 w-72 max-w-[85vw] bg-white border-l border-slate-200 shadow-2xl flex flex-col">
+              {/* Left-edge pull tab to dismiss */}
+              <button
+                onClick={() => setIsMobilePropertiesOpen(false)}
+                className="absolute -left-8 top-1/2 -translate-y-1/2 w-8 h-16 bg-white border border-r-0 border-slate-200 rounded-l-2xl shadow-lg flex flex-col items-center justify-center gap-1 hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                aria-label="Close properties"
+              >
+                <div className="w-1 h-5 bg-slate-400 rounded-full" />
+                <div className="w-1 h-3 bg-slate-300 rounded-full" />
+              </button>
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200 bg-slate-50 flex-shrink-0">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  <h3 className="font-bold text-slate-900 text-sm">Properties</h3>
+                  {selectedElement && (
+                    <span className="text-[10px] font-semibold uppercase bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                      {selectedElement.type}
+                    </span>
+                  )}
+                </div>
+                <button onClick={() => setIsMobilePropertiesOpen(false)} className="p-1.5 rounded-lg hover:bg-slate-200 transition-colors">
+                  <X className="w-4 h-4 text-slate-500" />
+                </button>
+              </div>
+              <div className="overflow-y-auto flex-1">
+                <PropertiesPanel
+                  selectedElement={selectedElement}
+                  canvas={canvas}
+                  onUpdateElement={updateElement}
+                  onDeleteSelected={() => { deleteSelectedElement(); setIsMobilePropertiesOpen(false); }}
+                  onUpdateCanvasMeta={updateCanvasMeta}
+                />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Mobile Bottom Toolbar — mobile only */}
+      <div className="md:hidden">
+        <MobileToolbar
           activeTool={activeTool}
           onToolSelect={setActiveTool}
           onAddElement={addElement}
-          isLayersOpen={isLayersOpen}
           onToggleLayers={() => setIsLayersOpen(!isLayersOpen)}
+          onToggleProperties={() => setIsMobilePropertiesOpen(!isMobilePropertiesOpen)}
           canUndo={canUndo}
           canRedo={canRedo}
           onUndo={undo}
           onRedo={redo}
-        />
-
-        {/* Center Canvas Stage */}
-        {isLoadingCanvas ? (
-          <div className="flex-1 flex items-center justify-center bg-slate-100">
-            <div className="flex flex-col items-center gap-2 text-slate-500">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-              <p className="text-sm font-medium">Loading canvas from MongoDB...</p>
-            </div>
-          </div>
-        ) : (
-          <CanvasStage
-            ref={stageComponentRef}
-            canvas={canvas}
-            selectedElementId={selectedElementId}
-            zoom={zoom}
-            onSelectElement={selectElement}
-            onUpdateElement={updateElement}
-          />
-        )}
-
-        {/* Optional Layers Drawer */}
-        {isLayersOpen && (
-          <LayersPanel
-            elements={canvas.elements}
-            selectedElementId={selectedElementId}
-            onSelectElement={selectElement}
-            onMoveLayer={moveLayer}
-            onToggleVisibility={toggleVisibility}
-            onDeleteElement={deleteElement}
-            onClose={() => setIsLayersOpen(false)}
-          />
-        )}
-
-        {/* Right Properties Panel */}
-        <PropertiesPanel
-          selectedElement={selectedElement}
-          canvas={canvas}
-          onUpdateElement={updateElement}
-          onDeleteSelected={deleteSelectedElement}
-          onUpdateCanvasMeta={updateCanvasMeta}
+          onSave={handleSaveTrigger}
         />
       </div>
 
@@ -473,6 +682,56 @@ export default function EditorPage() {
               isLoading={isDeleting}
             >
               Delete Canvas
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Guest Login Required Modal */}
+      <Modal
+        isOpen={isGuestAuthModalOpen}
+        onClose={() => setIsGuestAuthModalOpen(false)}
+        title="Login Required to Save Canvas"
+      >
+        <div className="space-y-4 py-1">
+          <div className="flex items-start gap-3 p-3.5 bg-blue-50 border border-blue-200 rounded-xl text-blue-900 text-xs sm:text-sm">
+            <Sparkles className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-blue-950">Your design is safely stored locally!</p>
+              <p className="text-slate-600 text-xs mt-0.5">
+                You are currently editing in Guest Mode. Log in or create an account now to save your canvas permanently with zero data loss.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-end gap-2.5 pt-3">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setIsGuestAuthModalOpen(false)}
+              className="w-full sm:w-auto"
+            >
+              Keep Editing as Guest
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                router.push('/register');
+              }}
+              className="w-full sm:w-auto text-blue-600 border-blue-200 hover:bg-blue-50"
+            >
+              Create Account
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => {
+                router.push('/login');
+              }}
+              className="w-full sm:w-auto"
+            >
+              Log In & Save
             </Button>
           </div>
         </div>

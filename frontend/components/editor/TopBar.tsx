@@ -54,18 +54,18 @@ export const TopBar: React.FC<TopBarProps> = ({
   canvasId,
 }) => {
   return (
-    <header className="h-16 border-b border-slate-200 bg-white px-4 flex items-center justify-between gap-4 z-20 select-none shadow-xs">
+    <header className="h-12 md:h-16 border-b border-slate-200 bg-white px-2 md:px-4 flex items-center justify-between gap-2 md:gap-4 z-20 select-none shadow-xs">
       {/* Left: Brand Logo & Navigation */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 md:gap-3">
         <Link
           href="/canvases"
-          className="flex items-center gap-2 p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+          className="flex items-center gap-1 p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
           title="Back to My Canvases"
         >
           <ChevronLeft className="w-5 h-5" />
         </Link>
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-slate-200 shadow-xs flex-shrink-0">
+        <Link href="/" className="flex items-center gap-1.5 md:gap-2.5">
+          <div className="relative w-7 h-7 md:w-8 md:h-8 rounded-lg overflow-hidden border border-slate-200 shadow-xs flex-shrink-0">
             <Image
               src="/logo.jpg"
               alt="Glazia Logo"
@@ -75,7 +75,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               priority
             />
           </div>
-          <span className="font-bold text-lg text-slate-900 tracking-tight hidden sm:inline">
+          <span className="font-bold text-base md:text-lg text-slate-900 tracking-tight hidden sm:inline">
             Glazia
           </span>
         </Link>
@@ -83,18 +83,18 @@ export const TopBar: React.FC<TopBarProps> = ({
         <span className="text-slate-300">|</span>
 
         {/* Center-Left: Canvas Name input */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 md:gap-2">
           <input
             type="text"
             value={canvasName}
             onChange={(e) => onCanvasNameChange(e.target.value)}
-            className="text-sm font-semibold text-slate-800 bg-transparent hover:bg-slate-50 focus:bg-white px-2.5 py-1 rounded-md border border-transparent hover:border-slate-200 focus:border-blue-400 focus:outline-none transition-all w-44 md:w-64 truncate"
+            className="text-sm font-semibold text-slate-800 bg-transparent hover:bg-slate-50 focus:bg-white px-2 py-1 rounded-md border border-transparent hover:border-slate-200 focus:border-blue-400 focus:outline-none transition-all w-28 sm:w-44 md:w-64 truncate"
             placeholder="Untitled Canvas"
             title="Click to rename canvas"
           />
           {/* Status badge */}
           {saveStatus === 'saving' && (
-            <span className="inline-flex items-center text-xs text-amber-600 font-medium gap-1 bg-amber-50 px-2 py-0.5 rounded-full">
+            <span className="hidden sm:inline-flex items-center text-xs text-amber-600 font-medium gap-1 bg-amber-50 px-2 py-0.5 rounded-full">
               <Clock className="w-3 h-3 animate-spin" />
               Saving...
             </span>
@@ -152,8 +152,8 @@ export const TopBar: React.FC<TopBarProps> = ({
         </button>
       </div>
 
-      {/* Right: Actions */}
-      <div className="flex items-center gap-2">
+      {/* Right: Actions — desktop buttons, hidden on mobile (actions are in mobile bottom bar) */}
+      <div className="hidden md:flex items-center gap-2">
         <Button
           variant="ghost"
           size="sm"
@@ -197,6 +197,17 @@ export const TopBar: React.FC<TopBarProps> = ({
             <Trash2 className="w-4 h-4" />
           </Button>
         )}
+      </div>
+
+      {/* Mobile right: just a compact save button icon */}
+      <div className="md:hidden flex items-center">
+        <button
+          onClick={onLoadClick}
+          className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
+          title="Load canvas"
+        >
+          <FolderOpen className="w-5 h-5" />
+        </button>
       </div>
     </header>
   );

@@ -27,63 +27,155 @@ export function useCanvas(initialData?: Partial<CanvasData>) {
     return canvas.elements.find((el) => el.id === selectedElementId) || null;
   }, [canvas.elements, selectedElementId]);
 
-  // Add Element with strictly specified defaults
-  const addElement = useCallback((type: ElementType) => {
+  // Add Element with support for filled/unfilled and extended shapes
+  const addElement = useCallback((type: ElementType, isUnfilled: boolean = false, customProps?: Partial<CanvasElement>) => {
     const id = `el_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     let newElement: CanvasElement;
 
     // Slight staggering so newly created elements don't stack directly on top
     const offset = (canvas.elements.length % 5) * 20;
+    const defaultFill = isUnfilled ? 'transparent' : '#2563eb';
+    const defaultStroke = isUnfilled ? '#2563eb' : undefined;
+    const defaultStrokeWidth = isUnfilled ? 2 : 0;
+
+    // Helper: place element centered on the canvas
+    const cx = (w: number) => Math.round(canvas.width / 2 - w / 2) + offset;
+    const cy = (h: number) => Math.round(canvas.height / 2 - h / 2) + offset;
 
     switch (type) {
-      case 'rectangle':
+      case 'rectangle': {
+        const w = 150, h = 100;
         newElement = {
-          id,
-          type: 'rectangle',
-          x: 100 + offset,
-          y: 100 + offset,
-          width: 150,
-          height: 100,
+          id, type: 'rectangle',
+          x: cx(w), y: cy(h), width: w, height: h,
           rotation: 0,
-          fill: '#2563eb',
-          stroke: '#111827',
-          strokeWidth: 0,
-          visible: true,
+          fill: defaultFill, stroke: defaultStroke, strokeWidth: defaultStrokeWidth,
+          cornerRadius: 4, visible: true,
+          ...customProps,
         };
         break;
+      }
 
-      case 'circle':
+      case 'circle': {
+        const w = 120, h = 120;
         newElement = {
-          id,
-          type: 'circle',
-          x: 200 + offset,
-          y: 150 + offset,
-          width: 120, // diameter 120 (radius 60)
-          height: 120,
+          id, type: 'circle',
+          x: cx(w), y: cy(h), width: w, height: h,
           rotation: 0,
-          fill: '#ef476f',
-          stroke: '#111827',
-          strokeWidth: 0,
-          visible: true,
+          fill: isUnfilled ? 'transparent' : '#ef4444',
+          stroke: isUnfilled ? '#ef4444' : undefined,
+          strokeWidth: defaultStrokeWidth, visible: true,
+          ...customProps,
         };
         break;
+      }
+
+      case 'star': {
+        const w = 120, h = 120;
+        newElement = {
+          id, type: 'star',
+          x: cx(w), y: cy(h), width: w, height: h,
+          rotation: 0,
+          fill: isUnfilled ? 'transparent' : '#f59e0b',
+          stroke: isUnfilled ? '#f59e0b' : undefined,
+          strokeWidth: defaultStrokeWidth, visible: true,
+          ...customProps,
+        };
+        break;
+      }
+
+      case 'triangle': {
+        const w = 130, h = 120;
+        newElement = {
+          id, type: 'triangle',
+          x: cx(w), y: cy(h), width: w, height: h,
+          rotation: 0,
+          fill: isUnfilled ? 'transparent' : '#10b981',
+          stroke: isUnfilled ? '#10b981' : undefined,
+          strokeWidth: defaultStrokeWidth, visible: true,
+          ...customProps,
+        };
+        break;
+      }
+
+      case 'diamond': {
+        const w = 120, h = 120;
+        newElement = {
+          id, type: 'diamond',
+          x: cx(w), y: cy(h), width: w, height: h,
+          rotation: 0,
+          fill: isUnfilled ? 'transparent' : '#8b5cf6',
+          stroke: isUnfilled ? '#8b5cf6' : undefined,
+          strokeWidth: defaultStrokeWidth, visible: true,
+          ...customProps,
+        };
+        break;
+      }
+
+      case 'hexagon': {
+        const w = 130, h = 120;
+        newElement = {
+          id, type: 'hexagon',
+          x: cx(w), y: cy(h), width: w, height: h,
+          rotation: 0,
+          fill: isUnfilled ? 'transparent' : '#ec4899',
+          stroke: isUnfilled ? '#ec4899' : undefined,
+          strokeWidth: defaultStrokeWidth, visible: true,
+          ...customProps,
+        };
+        break;
+      }
+
+      case 'line': {
+        const w = 200, h = 20;
+        newElement = {
+          id, type: 'line',
+          x: cx(w), y: cy(h), width: w, height: h,
+          rotation: 0,
+          fill: 'transparent', stroke: '#2563eb', strokeWidth: 3, visible: true,
+          ...customProps,
+        };
+        break;
+      }
+
+      case 'arrow': {
+        const w = 200, h = 20;
+        newElement = {
+          id, type: 'arrow',
+          x: cx(w), y: cy(h), width: w, height: h,
+          rotation: 0,
+          fill: 'transparent', stroke: '#2563eb', strokeWidth: 3, visible: true,
+          ...customProps,
+        };
+        break;
+      }
+
+      case 'badge': {
+        const w = 160, h = 44;
+        newElement = {
+          id, type: 'badge',
+          x: cx(w), y: cy(h), width: w, height: h,
+          rotation: 0,
+          fill: '#3b82f6', stroke: undefined, strokeWidth: 0,
+          text: 'NEW FEATURE', fontSize: 13, cornerRadius: 12, visible: true,
+          ...customProps,
+        };
+        break;
+      }
 
       case 'text':
+      default: {
+        const w = 240, h = 50;
         newElement = {
-          id,
-          type: 'text',
-          x: 150 + offset,
-          y: 150 + offset,
-          width: 200,
-          height: 50,
+          id, type: 'text',
+          x: cx(w), y: cy(h), width: w, height: h,
           rotation: 0,
-          fill: '#111827',
-          text: 'Hello World',
-          fontSize: 28,
-          fontFamily: 'Inter',
-          visible: true,
+          fill: '#111827', text: customProps?.text || 'Heading Text',
+          fontSize: 28, fontFamily: 'Inter', visible: true,
+          ...customProps,
         };
         break;
+      }
     }
 
     const nextElements = [...canvas.elements, newElement];
@@ -94,7 +186,7 @@ export function useCanvas(initialData?: Partial<CanvasData>) {
     }));
     setSelectedElementId(id);
     setActiveTool('select');
-  }, [canvas.elements, record]);
+  }, [canvas.elements, canvas.width, canvas.height, record]);
 
   // Update an element's properties
   const updateElement = useCallback((id: string, updates: Partial<CanvasElement>, shouldRecordHistory = true) => {
@@ -156,7 +248,7 @@ export function useCanvas(initialData?: Partial<CanvasData>) {
     }));
   }, []);
 
-  // Layer reordering (Bonus feature 1)
+  // Layer reordering
   const moveLayer = useCallback((id: string, direction: 'up' | 'down' | 'top' | 'bottom') => {
     setCanvas((prev) => {
       const index = prev.elements.findIndex((el) => el.id === id);
